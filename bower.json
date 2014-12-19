@@ -1,0 +1,8 @@
+{
+  "name": "location-calendar",
+  "private": true,
+  "dependencies": {
+    "d3": "~3.5.2",
+    "jquery": "~2.1.3"
+  }
+}
