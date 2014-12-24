@@ -1,9 +1,7 @@
 (function() {
-  "use strict";
+  'use strict';
 
   var hour_range = [23, 5];
-
-  uploadFile();
 
   // Step One
   function uploadFile() {
@@ -15,6 +13,8 @@
       processFile(file);
     });
   }
+
+  uploadFile();
 
   // Step Two
   function processFile(file) {
@@ -34,7 +34,7 @@
       //  console.log('Error loading data');
       //  console.log(exception);
       //}
-    }
+    };
 
     file_reader.readAsText(file);
 
@@ -80,14 +80,14 @@
     });
 
     // choose representatives
-    for (var d in locations) {
+    for (var l in locations) {
       // compute target date
       // compute candidates
       // compute centroid
       // return candidate nearest to centroid
 
       // temp logic.  TODO: implement steps above
-      representatives[d] = locations[d][0];
+      representatives[l] = locations[l][0];
     }
 
     console.log('got json');
@@ -127,7 +127,7 @@
   // E.g., pretty(1234567) => "1.2MB"
   //       pretty(1234567, 'KB') => "1205.6KB"
   function pretty(size, unit) {
-    var sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+    var sizes = ['B', 'KB', 'MB', 'GB', 'TB'],
         unit_idx = unit && sizes.indexOf(unit);
 
     if (unit_idx) {
@@ -142,34 +142,63 @@
     }
   }
 
-  function GoogleGeocoder() {
-    var geocoder = {};
+//  function GoogleGeocoder() {
+//    var geocoder = {};
+//
+//    var cache = {},
+//        queue = [],
+//        p = 4,  // lat/lon decimal precision to use for cache lookups
+//        ts = 1000,
+//        tu = 2000;
+//
+//    var precision = 4; // number of lat/lon digits to use for cache lookups
+//
+//    geocoder.geocode = function(lat, lon, cb) {
+//      // add to queue
+//      queue.append([lat, lon, cb]);
+//      processQueue();
+//    }
+//
+//    function processQueue() {
+//      // check if any in queue can be answered approximately, if so return
+//      // them
+//      var hits = [];
+//      queue.forEach(function(l, i) {
+//        if (l[0]) {}
+//      });
+//
+//      // check time since last request, if was successful and t > ts or was
+//      // unsuccessful and t > tu, then run.  else, clear scheduled calls and
+//      // schedule next call of processQueue for appropriate time.
+//    }
+//
+//    return geocoder;
+//  }
 
-    var cache = {},
-        queue = [];
+  function LocalGeocoder() {
+    var geocoder = {},
+        tree;
 
-    var precision = 4; // number of lat/lon digits to use for cache lookups
+    function geodist(a, b) {
+      var rad = Math.PI / 180,
+          lat1 = a.latitude * rad,
+          lon1 = a.longitude * rad,
+          lat2 = b.latitude * rad,
+          lon2 = b.longitude * rad,
+          dLat = (lat2 - lat1),
+          dLon = (lon2 - lon1),
+          x = Math.sin(dLat / 2),
+          y = Math.sin(dLon / 2),
+          c = x * x + y * y * Math.cos(lat1) * Math.cos(lat2);
+
+      return Math.atan2(Math.sqrt(c), Math.sqrt(1 - c));
+    }
+
+    tree = new kdTree();
 
     geocoder.geocode = function(lat, lon, cb) {
-      // add to queue
-      queue.append([lat, lon, cb]);
-      processQueue();
-    }
 
-    function processQueue() {
-      // check if any in queue can be answered approximately, if so return
-      // them
-      var hits = [];
-      queue.forEach(function(l, i) {
-        if (l[0]) {}
-      });
-
-      // check time since last request, if was successful and t > ts or was
-      // unsuccessful and t > tu, then run.  else, clear scheduled calls and
-      // schedule next call of processQueue for appropriate time.
-    }
-
-    return geocoder;
+    };
   }
 
 })();
