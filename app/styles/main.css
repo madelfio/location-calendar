@@ -60,3 +60,38 @@ body {
   color: #bbb;
   font-size: 24px;
 }
+
+/*body {
+  margin-top: 0px;
+  background-color: #ddd;
+  shape-rendering: crispEdges;
+}*/
+h1 {text-align: center; font-family: "Fjalla One", sans-serif;}
+#container {
+  margin: 0px auto;
+  padding: 10px;
+  width: 1000px;
+  background-color: #fff;
+  box-shadow: 0 0 25px #777;
+  border-left: 1px solid #444;
+  border-right: 1px solid #444;
+}
+.day {stroke: #dadada;}
+.month {fill: none; stroke: #000; stroke-width: 2px;}
+#legend {
+  position: relative;
+  overflow: hidden;
+  margin: 10px auto;
+  width: 375px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  box-shadow: 5px 5px 5px #aaa;
+}
+.legend {position: absolute;}
+.legend-info {display: inline-block; padding-right: 5px; white-space: nowrap}
+.legend-rank {width: 30px; text-align: right;}
+.legend-label {overflow: hidden; width: 220px;}
+.legend-count {width: 30px; text-align: right;}
+.legend-color {width: 40px;}
+#listing {color: #777; font-size: 90%; font-family: monospace;}
+#controls {float: right;}
