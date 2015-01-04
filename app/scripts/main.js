@@ -31,12 +31,7 @@
     };
 
     file_reader.onload = function(e) {
-      //try {
-        computeLocations(e.target.result);
-      //} catch (exception) {
-      //  console.log('Error loading data');
-      //  console.log(exception);
-      //}
+      computeLocations(e.target.result);
     };
 
     file_reader.readAsText(file);
@@ -237,9 +232,9 @@
 
     d3.selectAll('.day')
         .filter(function(d) {return d in data_lookup;})
-        .attr('fill', function(d) {return color(data_lookup[d].location.name);})
+        .attr('fill', function(d) {return color(data_lookup[d].location.n);})
       .select('title')
-        .text(function(d) {return d + ' - ' + data_lookup[d].location.name;});
+        .text(function(d) {return d + ' - ' + data_lookup[d].location.n;});
 
     function monthPath(t0) {
       var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
