@@ -36,8 +36,6 @@ function LocalGeocoder() {
 
     var n = gaz_tree.nearest(q, 1);
 
-    console.log(q, n[0]);
-
     return n[0][0];
 
   };

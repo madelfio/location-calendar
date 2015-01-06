@@ -10,7 +10,6 @@
 
   // Step One
   function uploadFile() {
-    console.log('Initializing upload zone');
     var file_input = document.getElementById('file-input');
 
     file_input.addEventListener('change', function() {
@@ -21,7 +20,6 @@
 
   // Step Two
   function processFile(file) {
-    console.log('Processing file');
     var file_reader = new FileReader(),
         file_size = file.size;
 
@@ -43,7 +41,6 @@
 
   // Step Three
   function computeLocations(raw_data) {
-    console.log('computing locations');
     var data = JSON.parse(raw_data);
     window.data = data;
     var locations = {}, representatives = {};
@@ -86,7 +83,6 @@
       representatives[d] = locations[d][0];
     }
 
-    console.log('got json');
     reverseGeocode(data, locations, representatives);
 
     // Given a Date object, return yyyy-mm-dd for beginning of filter range
@@ -103,7 +99,6 @@
 
   // Step Four
   function reverseGeocode(data, locations, representatives) {
-    console.log('reverse geocoding locations...');
     window.locations = locations;
     window.representatives = representatives;
 
