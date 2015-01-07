@@ -46,10 +46,17 @@
       </div>
     </div>
 
-    <div id="container">
+    <div id="container" style="display:none;">
+      <div id="options">
+        <form>
+          <label><input type="radio" name="mode" value="night" checked>
+            Night</input></label>
+          <label><input type="radio" name="mode" value="day"> Day</input></label>
+        </form>
+      </div>
       <div id="calendar"></div>
-      <div id="legend"></div>
-      <div id="listing"></div>
+      <div id="legend" style="display:none"></div>
+      <div id="listing" style="display:none"></div>
     </div>
 
     <!-- build:js(.) scripts/vendor.js -->

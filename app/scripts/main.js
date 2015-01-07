@@ -4,7 +4,10 @@
 (function() {
   'use strict';
 
-  var hour_range = [23, 5];
+  var DAY_HOURS = [11, 15],
+      NIGHT_HOURS = [23, 4],
+      hour_range = NIGHT_HOURS,
+      raw_data = [];
 
   uploadFile();
 
@@ -29,7 +32,8 @@
     };
 
     file_reader.onload = function(e) {
-      computeLocations(e.target.result);
+      raw_data = e.target.result;
+      computeLocations(raw_data);
     };
 
     file_reader.readAsText(file);
@@ -120,6 +124,7 @@
 
   // Step Five
   function renderAll(data, locations, rep_arr) {
+    d3.select('#container').style('display', 'block');
     renderCalendar(d3.select('#calendar'), rep_arr);
     //renderLegend(d3.select('#legend'), representatives);
     //renderList(d3.select('#listing'), representatives);
@@ -242,6 +247,14 @@
               "H" + (w0 + 1) * cellSize + "Z");
     }
   }
+
+  d3.selectAll('input').on('change', function change() {
+    hour_range = this.value === 'night' ? NIGHT_HOURS : DAY_HOURS;
+    console.log('hour_range:', hour_range);
+    if (raw_data.length > 0) {
+      computeLocations(raw_data);
+    }
+  });
 
   //
   // Utility Functions
