@@ -7,7 +7,10 @@
   var DAY_HOURS = [11, 15],
       NIGHT_HOURS = [23, 4],
       hour_range = NIGHT_HOURS,
-      raw_data = [];
+      raw_data = [],
+      representative_cache = {};
+
+  var geocoder = LocalGeocoder();
 
   uploadFile();
 
@@ -33,7 +36,7 @@
 
     file_reader.onload = function(e) {
       raw_data = e.target.result;
-      computeLocations(raw_data);
+      computeLocations(raw_data, hour_range);
     };
 
     file_reader.readAsText(file);
@@ -44,7 +47,16 @@
   }
 
   // Step Three
-  function computeLocations(raw_data) {
+  function computeLocations(raw_data, hour_range) {
+    if (representative_cache.hasOwnProperty(hour_range)) {
+      console.log('found representatives in cache');
+
+      window.setTimeout(function() {
+        reverseGeocode(data, locations, representative_cache[hour_range]);
+      }, 1);
+      return;
+    }
+
     var data = JSON.parse(raw_data);
     window.data = data;
     var locations = {}, representatives = {};
@@ -87,7 +99,13 @@
       representatives[d] = locations[d][0];
     }
 
-    reverseGeocode(data, locations, representatives);
+    representative_cache[hour_range] = representatives;
+
+    console.log('finished computing representatives');
+
+    window.setTimeout(function() {
+      reverseGeocode(data, locations, representatives);
+    }, 1);
 
     // Given a Date object, return yyyy-mm-dd for beginning of filter range
     // *iff* the time in estimated tz falls within filter range
@@ -106,7 +124,6 @@
     window.locations = locations;
     window.representatives = representatives;
 
-    var geocoder = LocalGeocoder();
     // assign place name and info to each representative
     var r;
     var rep_arr = [];
@@ -119,7 +136,10 @@
       }
     }
     window.rep_arr = rep_arr;
-    renderAll(data, locations, rep_arr);
+    console.log('finished reverse geocoding');
+    window.setTimeout(function() {
+      renderAll(data, locations, rep_arr);
+    }, 1);
   }
 
   // Step Five
@@ -128,6 +148,7 @@
     renderCalendar(d3.select('#calendar'), rep_arr);
     //renderLegend(d3.select('#legend'), representatives);
     //renderList(d3.select('#listing'), representatives);
+    console.log('finished rendering');
   }
 
   function renderCalendar(div, data) {
@@ -250,37 +271,9 @@
 
   d3.selectAll('input').on('change', function change() {
     hour_range = this.value === 'night' ? NIGHT_HOURS : DAY_HOURS;
-    console.log('hour_range:', hour_range);
+    console.log('you selected hour_range:', hour_range);
     if (raw_data.length > 0) {
-      computeLocations(raw_data);
+      computeLocations(raw_data, hour_range);
     }
   });
-
-  //
-  // Utility Functions
-  //
-
-  // Function to prettify a disk size value.
-  //
-  // E.g., pretty(1234567) => "1.2MB"
-  //       pretty(1234567, 'KB') => "1205.6KB"
-
-  /* Commenting until used
-  function pretty(size, unit) {
-    var sizes = ['B', 'KB', 'MB', 'GB', 'TB'],
-        unit_idx = unit && sizes.indexOf(unit);
-
-    if (unit_idx) {
-      return (size/Math.pow(1024, unit_idx)).toFixed(1) + unit;
-    }
-
-    for (var i = sizes.length; i > 0; i--) {
-      var min = Math.pow(1024, i);
-      if (size > min) {
-        return (size/min).toFixed(1) + sizes[i];
-      }
-    }
-  }
-  */
-
 })();
