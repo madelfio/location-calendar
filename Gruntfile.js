@@ -331,7 +331,7 @@ module.exports = function (grunt) {
       pages: {
         options: {
           remote: 'git@github.com:madelfio/location-calendar.git',
-          branch: 'ghpages'
+          branch: 'gh-pages'
         }
       }
     }
