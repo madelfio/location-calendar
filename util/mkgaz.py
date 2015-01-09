@@ -4,7 +4,7 @@ import sys
 
 FILE = sys.argv[1]
 QUERY = """
-SELECT name n, admin1 a, country c, latitude lat, longitude lon
+SELECT name n, admin1 a, country c, round(latitude, 4) lat, round(longitude, 4) lon
 FROM geoname
 WHERE fcode like 'PPL%'
 AND population > 5000;
