@@ -1,5 +1,5 @@
 /* configuration for jshint */
-/* global d3, LocalGeocoder */
+/* global d3, LocalGeocoder, Progress */
 
 (function() {
   'use strict';
@@ -29,14 +29,18 @@
     var file_reader = new FileReader(),
         file_size = file.size;
 
+    var p = Progress('Processing File').start();
+
     file_reader.onprogress = function(e) {
       var pct = Math.round((e.loaded / e.total) * 100);
+      p.set(e.loaded / e.total);
       showStatus(pct, file_size);
     };
 
     file_reader.onload = function(e) {
       raw_data = e.target.result;
       computeLocations(raw_data, hour_range);
+      p.done().clear();
     };
 
     file_reader.readAsText(file);
@@ -57,7 +61,12 @@
       return;
     }
 
+    var p = Progress('Parsing File').start();
     var data = JSON.parse(raw_data);
+    p.done();
+
+    var p2 = Progress('Filtering Locations').start();
+
     window.data = data;
     var locations = {}, representatives = {};
     var t, d;
@@ -105,6 +114,8 @@
 
     window.setTimeout(function() {
       reverseGeocode(data, locations, representatives);
+      p2.done().clear();
+      p.done().clear();
     }, 1);
 
     // Given a Date object, return yyyy-mm-dd for beginning of filter range
@@ -124,6 +135,8 @@
     window.locations = locations;
     window.representatives = representatives;
 
+    var p = Progress('Geocoding').start();
+
     // assign place name and info to each representative
     var r;
     var rep_arr = [];
@@ -139,15 +152,18 @@
     console.log('finished reverse geocoding');
     window.setTimeout(function() {
       renderAll(data, locations, rep_arr);
+      p.done().clear();
     }, 1);
   }
 
   // Step Five
   function renderAll(data, locations, rep_arr) {
+    var p = Progress('Rendering').start();
     d3.select('#container').style('display', 'block');
     renderCalendar(d3.select('#calendar'), rep_arr);
     //renderLegend(d3.select('#legend'), representatives);
     //renderList(d3.select('#listing'), representatives);
+    p.done().clear();
     console.log('finished rendering');
   }
 
