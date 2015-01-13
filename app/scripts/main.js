@@ -37,7 +37,8 @@
 
   function filterHours(data, env, cb) {
     var filtered_data = {},
-        t, d,
+        batch = Math.floor(data.locations.length / 100),
+        l, t, d,
         hr;
 
     if (hour_range[0] < hour_range[1]) {
@@ -47,17 +48,30 @@
     }
 
     // pull out dates that satisfy hour ranges
-    data.locations.forEach(function(l) {
-      t = new Date(+l.timestampMs);
-      d = getDay(t);
+    function applyFilter(first, last) {
+      last = Math.min(last, data.locations.length - 1);
+      for (var i = first; i <= last; i++) {
+        l = data.locations[i];
+        t = new Date(+l.timestampMs);
+        d = getDay(t);
 
-      if (d) {
-        d in filtered_data || (filtered_data[d] = []);
-        filtered_data[d].push({
-          lat: l.latitudeE7, lon: l.longitudeE7, ts: l.timestampMs,
-        });
+        if (d) {
+          d in filtered_data || (filtered_data[d] = []);
+          filtered_data[d].push({
+            lat: l.latitudeE7, lon: l.longitudeE7, ts: l.timestampMs,
+          });
+        }
       }
-    });
+
+      if (first >= last) {
+        cb(filtered_data);
+      } else {
+        env.progress.set(last / data.locations.length);
+        setTimeout(applyFilter, 1, last, last + batch);
+      }
+    }
+
+    applyFilter(0, batch);
 
     // Given a Date object, return yyyy-mm-dd for beginning of filter range
     // *iff* the time in estimated tz falls within filter range
@@ -65,12 +79,9 @@
       if (hr(t.getHours()) === false) {return null;}
       return t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
     }
-
-    cb(filtered_data);
   }
 
   function selectRepresentatives(filtered_data, env, cb) {
-    console.log('selecting representatives');
     var reps = [];
     // Currently using stub logic -- should eventually find
     // time-offset-weighted centroid of points rather than the first
