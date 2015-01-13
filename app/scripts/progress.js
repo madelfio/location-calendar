@@ -127,5 +127,10 @@ function Progress(name, div) {
     return progress;
   };
 
+  progress.clearAll = function() {
+    inner_div.selectAll('.progress-bar').remove();
+    outer_div.style('display', 'none');
+  };
+
   return progress;
 }
