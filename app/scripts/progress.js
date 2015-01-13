@@ -15,9 +15,7 @@ function Progress(name, div) {
       outer_div,
       inner_div,
       pdiv,
-      spinner,
-      bar_width = 150,
-      bar_height = 20;
+      spinner;
 
   if (typeof div === 'undefined') {
     outer_div = d3.select('.progress-overlay');
@@ -44,9 +42,9 @@ function Progress(name, div) {
     inner_div = outer_div.append('div')
         .attr('class', 'progress-container')
         .style('position', 'absolute')
-        .style('width', '300px')
+        .style('width', '400px')
         .style('left', '50%')
-        .style('margin-left', '-150px')
+        .style('margin-left', '-200px')
         .style('top', '10%')
         .style('background', 'white')
         .style('border-radius', '2px')
@@ -84,12 +82,16 @@ function Progress(name, div) {
         .attr('class', 'progress-bar');
 
     pdiv.append('span')
+        .style('display', 'inline-block')
+        .style('width', '45%')
+        .style('vertical-align', 'top')
+        .style('text-align', 'right')
         .text(name);
 
     pdiv.append('span')
         .attr('class','progress-bar-bg')
-        .style('width', bar_width + 'px')
-        .style('height', bar_height + 'px')
+        .style('width', '45%')
+        .style('height', '20px')
         .style('display', 'inline-block')
         .style('border', '1px solid black')
         .style('margin-left', '10px')
