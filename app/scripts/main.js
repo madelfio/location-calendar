@@ -169,7 +169,20 @@
   function run(file, hour_range) {
     renderC({file: file, hour_range: hour_range}, function() {
       setTimeout(Progress().clearAll, 400);
+      scrollToCalendar();
     });
+  }
+
+  function scrollToCalendar() {
+    d3.transition().duration(1000)
+        .tween('scroll', scrollTween(d3.select('#container').property('offsetTop')));
+  }
+
+  function scrollTween(offset) {
+    return function() {
+      var i = d3.interpolateNumber(window.pageYOffset || document.documentElement.scrollTop, offset);
+      return function(t) { scrollTo(0, i(t)); };
+    };
   }
 
   d3.select('#file-input').on('change', function() {
