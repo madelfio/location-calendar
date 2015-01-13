@@ -37,7 +37,8 @@
 
   function filterHours(data, env, cb) {
     var filtered_data = {},
-        batch = Math.floor(data.locations.length / 100),
+        batches = 50,
+        batch = Math.floor(data.locations.length / batches),
         l, t, d,
         hr;
 

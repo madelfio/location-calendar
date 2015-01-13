@@ -91,7 +91,7 @@ function Progress(name, div) {
     pdiv.append('span')
         .attr('class','progress-bar-bg')
         .style('width', '45%')
-        .style('height', '20px')
+        .style('height', '1.5ex')
         .style('display', 'inline-block')
         .style('border', '1px solid black')
         .style('margin-left', '10px')
