@@ -5,44 +5,41 @@ function Calendar(div) {
   "use strict";
   var calendar = {};
 
-  var colorMap = d3.scale.ordinal()
-      .range(['#2ca02c', '#ffbb78', '#ff9896', '#c5b0d5', '#e377c2',
-        '#f7b6d2', '#7f7f7f', '#c7c7c7 ', '#bcbd22', '#cbcb8d', '#17be6f',
-        '#9edae5', '#393b79', '#5254a3', '#6b6ecf', '#9c9ede', '#637939',
-        '#8ca252', '#b5cf6b', '#cedb9c', '#8c6d31', '#bd9e39', '#e7ba52',
-        '#e7cb94', '#843c39', '#ad494a', '#d6616b', '#e7969c', '#7b4173',
-        '#a55194', '#ce6dbd', '#de9ed6', '#3182bd', '#6baed6', '#9ecae1',
-        '#c6dbef', '#e6550d', '#fd8d3c', '#fdae6b', '#fdd0a2', '#31a354',
-        '#74c476', '#a1d99b', '#c7e9c0', '#756bb1', '#9e9ac8', '#bcbddc',
-        '#dadaeb', '#636363', '#969696', '#bdbdbd', '#d9d9d9', 'darkblue',
-        'darkgreen', 'crimson', 'darkmagenta', 'darkorange', 'darkorchid',
-        'darkturquoise', 'darkviolet']);
+  var colorList = [
+    // (C: 0.4-1.3, L: 1-1.5)
+    "#8CCCED", "#F89A5F", "#43F8A3", "#FDFD96", "#E1BE32", "#B8D5A0",
+    "#8DCE54", "#D2DDF5", "#F7BD94", "#A0F2D5", "#F99AB7",
+    // Higher chroma to highlight trips
+    "#35DA74", "#EE3FF2", "#F1441A", "#3E8DCE", "#E3E01B", "#EE3A84",
+    "#A7720E", "#456CF3", "#B562B6", "#38F42D", "#74A220", "#F5B412",
+    "#DE5B4C", "#A4F33D", "#2C8F3C", "#F223AA", "#B776F0", "#E97E21",
+    "#ED2D58", "#48B221", "#55E655", "#7B80CD", "#C55A98", "#BE9A0D",
+    "#488EEE", "#BD8CE8", "#D140B6", "#EE3F3C", "#767EEB", "#A4B419",
+    "#7F8B18", "#E779DE", "#DD4C71", "#C559DE", "#C1E222", "#E1572A",
+    "#8ED031", "#956EBF", "#469323", "#DA8D20", "#CE49A3", "#CC6324",
+    "#E2578F", "#3FAC43", "#E640D0", "#E971C4", "#E34C5D", "#55C94C",
+    "#A45ECC", "#50E026", "#CC54F0", "#FA1B8C", "#F02971", "#DE79ED",
+    "#E948AA", "#EB3C93", "#986AEC", "#6C65E9", "#83E529", "#D03F7F"
+ ];
 
-  function color(place) {
-    switch (place) {
-      case 'Unknown':
-        return '#eee';
-      case 'Washington, DC, USA':
-        return '#98df8a';
-      case 'Richmond, VA, USA':
-        return '#aec7e8';
-      case 'Chevy Chase, MD, USA':
-        return '#ff7f0e';
-      case 'Oakton, VA, USA':
-        return '#1fb7b4';
-      case 'Chevy Chase Village, MD, USA':
-        return 'gold';
-      case 'Howard, MD, USA':
-        return '#9467bd';
-      case 'Vienna, VA, USA':
-        return '#C76';
-      case 'Corolla, NC, USA':
-        return '#c49c94';
-      case 'College Park, MD, USA':
-        return 'lemonchiffon';
-      default:
-        return colorMap(place);
+  var color = d3.scale.ordinal().range(colorList);
+
+  function primeColorPalette(locationNames) {
+    var counts = {};
+    locationNames.forEach(function(n) {
+      counts[n] = counts[n] + 1 || 1;
+    });
+
+    var sortable = [];
+    for (var n in counts) {
+      sortable.push([n, counts[n]]);
     }
+
+    sortable.sort(function(a, b) {return b[1] - a[1];});
+
+    sortable.forEach(function(s) {
+      color(s[0]);
+    });
   }
 
   var day = d3.time.format('%w'),
@@ -91,7 +88,7 @@ function Calendar(div) {
         .attr('height', cellSize)
         .attr('x', function(d) {return week(d) * cellSize; })
         .attr('y', function(d) {return day(d) * cellSize; })
-        .attr('fill', 'white')
+        .attr('fill', '#f3f3f3')
         .datum(format);
 
     rect.append('title')
@@ -107,6 +104,8 @@ function Calendar(div) {
       .key(function(d) {return format(d.day);})
       .rollup(function(d) {return d[0];})
       .map(data);
+
+    primeColorPalette(data.map(function(d) {return d.location.n;}));
 
     d3.selectAll('.day')
         .filter(function(d) {return d in data_lookup;})
