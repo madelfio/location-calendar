@@ -74,11 +74,15 @@
 
     applyFilter(0, batch);
 
+    function pad(n, s) {
+      return ('0' + n).substr(-(s || 2));
+    }
+
     // Given a Date object, return yyyy-mm-dd for beginning of filter range
     // *iff* the time in estimated tz falls within filter range
     function getDay(t) {
       if (hr(t.getHours()) === false) {return null;}
-      return t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
+      return t.getFullYear() + '-' + pad(t.getMonth() + 1) + '-' + pad(t.getDate());
     }
   }
 
@@ -128,12 +132,12 @@
           cache[uid] = [].slice.call(arguments, 0);
           setTimeout(function() {
             main_func.apply(this, [].concat(cache[uid], env, cb));
-          }, 50);
+          }, 100);
         });
       } else {
         setTimeout(function() {
           main_func.apply(this, [].concat(cache[uid], env, cb));
-        }, 50);
+        }, 100);
       }
     };
   }
