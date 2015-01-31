@@ -43,9 +43,23 @@
         hr;
 
     if (hour_range[0] < hour_range[1]) {
-      hr = function(h) {return (h > hour_range[0] && h < hour_range[1]);};
+      hr = function(h) {return (h > hour_range[0] && h < hour_range[1]) ? 0 : null;};
     } else {
-      hr = function(h) {return (h > hour_range[0] || h < hour_range[1]);};
+      hr = function(h) {return (h > hour_range[0] ? 0 : h < hour_range[1] ? 1 : null);};
+    }
+
+    function getApproxLocalTime(ts, lon) {
+      return new Date(ts + (lon/15) * 60 * 60 * 1000);
+    }
+
+    var fmt = d3.time.format.utc('%Y-%m-%d');
+
+    // Given a Date object, return yyyy-mm-dd for beginning of filter range
+    // *iff* the time in estimated tz falls within filter range
+    function getDay(t) {
+      var offset = hr(t.getUTCHours());
+      return (offset === null ? null :
+              fmt(new Date(t.getTime() - offset * 24 * 60 * 60 * 1000)));
     }
 
     // pull out dates that satisfy hour ranges
@@ -53,13 +67,13 @@
       last = Math.min(last, data.locations.length - 1);
       for (var i = first; i <= last; i++) {
         l = data.locations[i];
-        t = new Date(+l.timestampMs);
+        t = getApproxLocalTime(+l.timestampMs, l.longitudeE7 * 1e-7);
         d = getDay(t);
 
         if (d) {
           d in filtered_data || (filtered_data[d] = []);
           filtered_data[d].push({
-            lat: l.latitudeE7, lon: l.longitudeE7, ts: l.timestampMs,
+            lat: l.latitudeE7, lon: l.longitudeE7, ts: l.timestampMs, day: d
           });
         }
       }
@@ -74,38 +88,24 @@
 
     applyFilter(0, batch);
 
-    function pad(n, s) {
-      return ('0' + n).substr(-(s || 2));
-    }
-
-    // Given a Date object, return yyyy-mm-dd for beginning of filter range
-    // *iff* the time in estimated tz falls within filter range
-    function getDay(t) {
-      if (hr(t.getHours()) === false) {return null;}
-      return t.getFullYear() + '-' + pad(t.getMonth() + 1) + '-' + pad(t.getDate());
-    }
   }
 
+  // Return new object, with one location representing each day.
+  // Currently using stub logic -- should eventually find time-offset-weighted
+  // centroid of points rather than the first
   function selectRepresentatives(filtered_data, env, cb) {
-    var reps = [];
-    // Currently using stub logic -- should eventually find
-    // time-offset-weighted centroid of points rather than the first
-    for (var d in filtered_data) {reps[d] = filtered_data[d][0];}
+    var reps = {};
+    for (var day in filtered_data) {reps[day] = filtered_data[day][0];}
     cb(reps);
   }
 
+  // return new object, with assigned place name and info for each
+  // representative
   function reverseGeocode(representatives, env, cb) {
-    // assign place name and info to each representative
-    var georeps = [],
-        r, v;
-    for (r in representatives) {
-      if (representatives.hasOwnProperty(r)) {
-        v = representatives[r];
-        v.location = geocoder.geocode(v);
-        v.day = new Date(r);
-        georeps.push(v);
-      }
-    }
+    var georeps = d3.values(representatives).map(function(r) {
+      r.location = geocoder.geocode(r);
+      return r;
+    });
     cb(georeps);
   }
 

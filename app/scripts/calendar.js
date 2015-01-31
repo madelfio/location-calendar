@@ -42,10 +42,10 @@ function Calendar(div) {
     });
   }
 
-  var day = d3.time.format('%w'),
-      week = d3.time.format('%U'),
-      year = d3.time.format('%Y'),
-      format = d3.time.format('%Y-%m-%d');
+  var day = d3.time.format.utc('%w'),
+      week = d3.time.format.utc('%U'),
+      year = d3.time.format.utc('%Y'),
+      format = d3.time.format.utc('%Y-%m-%d');
   var width = 960,
       height = 136,
       cellSize = 15;
@@ -55,7 +55,7 @@ function Calendar(div) {
     // ensure div is not hidden
     div.style('display', 'block');
 
-    var year_range = d3.extent(data, function(d) {return +year(d.day);});
+    var year_range = d3.extent(data, function(d) {return +year(new Date(d.day));});
 
     var svg = div.selectAll('svg')
         .data(d3.range(year_range[0],year_range[1] + 1), function(d) {return d;})
@@ -101,7 +101,7 @@ function Calendar(div) {
         .attr('d', monthPath);
 
     var data_lookup = d3.nest()
-      .key(function(d) {return format(d.day);})
+      .key(function(d) {return format(new Date(d.day));})
       .rollup(function(d) {return d[0];})
       .map(data);
 
