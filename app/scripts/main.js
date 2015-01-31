@@ -173,7 +173,7 @@
 
   function run(file, hour_range) {
     renderC({file: file, hour_range: hour_range}, function() {
-      setTimeout(Progress().clearAll, 400);
+      setTimeout(Progress().clearAll, 200);
       scrollToCalendar();
     });
   }
